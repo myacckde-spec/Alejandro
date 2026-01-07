@@ -119,20 +119,20 @@ class _AudioPlaceholder extends StatelessWidget {
 
 
 
-Чтоб решить проблему думаю нужно
+// Чтоб решить проблему думаю нужно
 
 
- удерживать VideoController живым между треками или хотя бы между типами контента.
+//  удерживать VideoController живым между треками или хотя бы между типами контента.
 
-т е один VideoController на весь эфир
+// т е один VideoController на весь эфир
 
-Проблема в том, что:
+// Проблема в том, что:
 
-video surface не очищается или не перекрывается наверняка
+// video surface не очищается или не перекрывается наверняка
 
-  т е 
+//   т е 
   
-  вместо
+//   вместо
 
    switch (fileType) {
       case FileType.video:
@@ -144,7 +144,7 @@ video surface не очищается или не перекрывается н�
             : const SizedBox.shrink(key: ValueKey('video_empty'));
 
 
-  Сделать что то такое
+  // Сделать что то такое
 
     Stack(
       children: [
