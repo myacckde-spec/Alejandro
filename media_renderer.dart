@@ -224,4 +224,36 @@ await controller.setSource(newVideo);
 
 // Дальше - Запретить autoplay / auto-advance при показе слайдов
 
+// Запрещаем autoplay / auto-advance при показе слайдов
 
+final bool allowAutoAdvance = fileType == FileType.video;
+
+if (allowAutoAdvance) {
+  controller.play();
+}
+
+// плеер пытается автоматически включить следующий трек, а потом корректирует источник
+
+// Можно даже вести короткое transition-состояние
+enum MediaState {
+  video,
+  slide,
+  audio,
+  transition,
+}
+
+state = MediaState.transition;
+await Future.delayed(const Duration(milliseconds: 80));
+state = MediaState.video;
+
+// Даже короткое промежуточное состояние должен полностью убирать визуальные артефакты
+
+       // Итого
+       
+// _buildMediaByType наодо чтоб  отвечать  только за выбор UI.
+//
+// Video widget должен всегда оставаться в widget tree , а управление жизненным циклом - video surface
+// (pause / source / play) должно быть  контролируемым чтоб лучше и не зависеть от перестроения UI.
+//
+// Это думаю должно  решить вопрос:
+// - мелькание старого видео и дерганий
