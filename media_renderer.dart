@@ -187,5 +187,41 @@ class _AudioPlaceholder extends StatelessWidget {
 // _buildMediaByType отвечает только за выбор UI, 
 //     но сам жизненный цикл 
 //      video surface должен быть стабильным.
-  
+
+
+// 11.01
+
+// ДОП ШАГ 
+
+// Проблема уже не в widget tree — UI стал стабильным,
+// Video widget больше не пересоздаётся.
+
+// Остался полкучается артефакт -  мелькание старого видео после слайда
+// причина - жизнененный цикл VideoController.
+
+// VideoController продолжает обновлять video surface, но в момент смены source после показа слайдов.
+// Flutter на 1–2 кадра показывает последний буфер похоже  предыдущего видео.
+
+// Надо ЯВНО управлять состоянием контроллер при переходах между типами контента.
+
+// это ставим при показе слайдов
+if (fileType == FileType.slide) {
+  controller?.pause();
+}
+
+// скрывать Video widget недостаточно. Пока контроллер играет, video surface продолжает обновляться, - тарый кадр может всплывать при обратном переходе к видео
+// Перед сменой video source — давайте очищать состояние контроллера
+Future<void> prepareForNewVideo(VideoController controller) async {
+  await controller.pause();
+  await controller.seekTo(Duration.zero);
+  await Future.delayed(const Duration(milliseconds: 50));
+}
+
+await prepareForNewVideo(controller);
+await controller.setSource(newVideo);
+
+// Это предотвращает эту штуку - последний кадр предыдущего видео
+
+// Дальше - Запретить autoplay / auto-advance при показе слайдов
+
 
