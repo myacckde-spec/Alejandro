@@ -257,3 +257,63 @@ state = MediaState.video;
 //
 // Это думаю должно  решить вопрос:
 // - мелькание старого видео и дерганий
+
+
+
+
+
+12/01
+
+  if (fileType == FileType.slide) {
+  controller?.pause();
+}
+
+должна вызываться в onTrackChanged во ViewModel
+
+ViewModel знает текущий FileType
+
+это  управление состоянием плеера
+
+т е 
+
+void onTrackChanged(Track track) {
+  if (track.fileType == FileType.slide) {
+    controller.pause();
+  }
+}
+
+prepareForNewVideo() — находиться в Player / Service слое
+
+prepareForNewVideo() - это операция с VideoController,
+поэтому ей место в ScheduleTrackPlayerService
+
+
+Future<void> prepareForNewVideo(VideoController controller) async {
+  await controller.pause();
+  await controller.seekTo(Duration.zero);
+  await Future.delayed(const Duration(milliseconds: 50));
+}
+
+
+И вызывать её из ViewModel, когда меняется трек на видео
+
+if (track.fileType == FileType.video) {
+  await playerService.prepareForNewVideo(controller);
+  await playerService.setSource(track.video);
+}
+
+
+autoplay / auto-advance - гже это
+
+
+Эта логика тоже должна быть во ViewModel,
+потому что это бизнес-логика эфира, а не UI
+
+  например 
+  final bool allowAutoPlay = track.fileType == FileType.video;
+
+  if (allowAutoPlay) {
+  controller.play();
+}
+
+       ViewModel знает, какой тип контента сейчас
